@@ -15,3 +15,16 @@ with open('/datasets/FedScale/leaf_femnist/client_data_mapping/{}.csv'.format(da
             for ind in range(data_len):
                 line = '{},{},{},{}'.format(cid, f_path, ind, y[ind])
                 fw.write(line + '\n')
+
+
+
+
+
+import os
+import pickle
+
+len_list = []
+for f_name in os.listdir('./data'):
+    with open('./data/{}/train.pickle'.format(f_name), 'rb') as f:
+        d = pickle.load(f)
+        len_list.append(len(d['x']))

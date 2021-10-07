@@ -6,6 +6,7 @@ parser.add_argument('--log_path', type=str, default='../', help="default path is
 
 # The basic configuration of the cluster
 parser.add_argument('--ps_ip', type=str, default='127.0.0.1')
+parser.add_argument('--cuda_ids', type=str, default='[0,1]')
 parser.add_argument('--ps_port', type=str, default='29501')
 parser.add_argument('--manager_port', type=int, default='9005')
 parser.add_argument('--this_rank', type=int, default=1)
@@ -48,6 +49,7 @@ parser.add_argument('--blacklist_max_len', type=float, default=0.3)
 # The configuration of different hyper-parameters for training
 parser.add_argument('--epochs', type=int, default=1000)
 parser.add_argument('--local_steps', type=int, default=20)
+parser.add_argument('--local_epochs', type=int, default=1)
 parser.add_argument('--batch_size', type=int, default=30)
 parser.add_argument('--test_bsz', type=int, default=128)
 parser.add_argument('--backend', type=str, default="gloo")

@@ -6,6 +6,12 @@ from torch.autograd import Variable
 import math
 from transformers import BertModel
 
+
+LEAF_CHARACTERS = (
+    "\n !\"&'(),-.0123456789:;>?ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz}"
+)
+
+
 class MnistCNN(nn.Module):
     """ CNN Network architecture. """
 
@@ -25,6 +31,53 @@ class MnistCNN(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return x #F.log_softmax(x, dim=1)
+
+
+class ShakespeareLeafNet(nn.Module):  # type: ignore
+    """Create Shakespeare model for LEAF baselines.
+
+    Args:
+        chars (str, optional): String of possible characters (letters+digits).
+            Defaults to LEAF_CHARACTERS.
+        seq_len (int, optional): Length of each sequence. Defaults to 80.
+        hidden_size (int, optional): Size of hidden layer. Defaults to 256.
+        embedding_dim (int, optional): Dimension of embedding. Defaults to 8.
+    """
+
+    def __init__(
+        self,
+        chars = LEAF_CHARACTERS,
+        seq_len = 80,
+        hidden_size = 256,
+        embedding_dim = 8,
+    ):
+        super().__init__()
+        self.dict_size = len(chars)
+        self.seq_len = seq_len
+        self.hidden_size = hidden_size
+
+        self.encoder = nn.Embedding(self.dict_size, embedding_dim)
+        self.lstm = nn.LSTM(
+            input_size=embedding_dim,
+            hidden_size=hidden_size,
+            num_layers=2,
+            batch_first=True,  # Notice batch is first dim now
+        )
+        self.decoder = nn.Linear(self.hidden_size, self.dict_size)
+
+    def forward(self, sentence):
+        """Forwards sentence to obtain next character.
+
+        Args:
+            sentence (torch.Tensor): Tensor containing indices of characters
+
+        Returns:
+            torch.Tensor: Vector encoding position of predicted character
+        """
+        encoded_seq = self.encoder(sentence)  # (batch, seq_len, embedding_dim)
+        _, (h_n, _) = self.lstm(encoded_seq)  # (batch, seq_len, hidden_size)
+        pred = self.decoder(h_n[-1])
+        return pred
 
 
 class FemnistCNN(nn.Module):

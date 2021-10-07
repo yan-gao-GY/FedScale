@@ -155,6 +155,9 @@ def init_model():
     elif args.task == 'femnist':
         from utils.models import FemnistCNN
         model = FemnistCNN(outputClass[args.data_set])
+    elif args.task == 'shakespeare':
+        from utils.models import ShakespeareLeafNet
+        model = ShakespeareLeafNet()
     else:
         if args.model == "lr":
             from utils.models import LogisticRegression
@@ -220,6 +223,12 @@ def init_dataset():
             train_transform, test_transform = get_data_transform('femnist')
             train_dataset = FEMNIST(args.data_dir, dataset='train', transform=train_transform)
             test_dataset = FEMNIST(args.data_dir, dataset='test', transform=test_transform)
+
+        elif args.data_set == 'shakespeare':
+            from utils.shakespeare import SHAKESPEARE
+
+            train_dataset = SHAKESPEARE(args.data_dir, dataset='train')
+            test_dataset = SHAKESPEARE(args.data_dir, dataset='test')
 
         elif args.data_set == 'openImg':
             from utils.openimage import OpenImage
