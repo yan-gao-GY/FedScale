@@ -128,4 +128,10 @@ and
 ## Contact
 Fan Lai (fanlai@umich.edu), Yinwei Dai (dywsjtu@umich.edu), Xiangfeng Zhu (xzhu0027@gmail.com) and Mosharaf Chowdhury from the University of Michigan.
 
+## Run experiments on Cam server
+1. `cd core/evals`
+2. Femnist `python manager.py submit configs/femnist/conf.yml`
+3. Shakespeare `python manager.py submit configs/shakespeare/conf.yml`
+
+
 
