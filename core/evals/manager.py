@@ -62,7 +62,7 @@ def process_cmd(yaml_file):
     learner_conf = '-'.join([str(_) for _ in list(range(1, total_gpu_processes+1))])
     # =========== Submit job to parameter server ============
     running_vms.add(ps_ip)
-    ps_cmd = f" python {yaml_conf['exp_path']}/{yaml_conf['aggregator_entry']} {conf_script} --this_rank=0 --learners={learner_conf} --cuda_device=cuda:{cuda_ids[0]}"
+    ps_cmd = f" python {yaml_conf['exp_path']}/{yaml_conf['aggregator_entry']} {conf_script} --this_rank=0 --learners={learner_conf} --cuda_device=cuda:{cuda_ids[0][0]}"
 
     with open(f"{job_name}_logging", 'wb') as fout:
         pass
@@ -75,19 +75,21 @@ def process_cmd(yaml_file):
     time.sleep(3)
     # =========== Submit job to each worker ============
     rank_id = 1
+    node_num = 0
     for worker, gpu in zip(worker_ips, total_gpus):
         running_vms.add(worker)
         print(f"Starting workers on {worker} ...")
 
         for cuda_id in range(len(gpu)):
             for _  in range(gpu[cuda_id]):
-                worker_cmd = f" python {yaml_conf['exp_path']}/{yaml_conf['executor_entry']} {conf_script} --this_rank={rank_id} --learners={learner_conf} --cuda_device=cuda:{cuda_ids[cuda_id]} "
+                worker_cmd = f" python {yaml_conf['exp_path']}/{yaml_conf['executor_entry']} {conf_script} --this_rank={rank_id} --learners={learner_conf} --cuda_device=cuda:{cuda_ids[node_num][cuda_id]} "
                 rank_id += 1
 
                 with open(f"{job_name}_logging", 'a') as fout:
                     time.sleep(2)
                     subprocess.Popen(f'ssh {submit_user}{worker} "{setup_cmd} {worker_cmd}"',
                                     shell=True, stdout=fout, stderr=fout)
+        node_num += 1
 
     # dump the address of running workers
     current_path = os.path.dirname(os.path.abspath(__file__))

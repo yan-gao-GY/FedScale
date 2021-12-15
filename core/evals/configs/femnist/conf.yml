@@ -3,8 +3,8 @@
 # ========== Cluster configuration ========== 
 # ip address of the parameter server (need 1 GPU process)
 
-# ps_ip: 128.232.115.65  # tarawera
-ps_ip: 128.232.115.66 # ngongotaha
+ps_ip: 128.232.115.65  # tarawera
+# ps_ip: 128.232.115.66 # ngongotaha
 # ps_ip: 128.232.115.0  # mauao
 # ps_ip: 127.0.0.1
 
@@ -12,11 +12,11 @@ ps_ip: 128.232.115.66 # ngongotaha
 # Note that if we collocate ps and worker on same GPU, then we need to decrease this number of available processes on that GPU by 1
 # E.g., master node has 4 available processes, then 1 for the ps, and worker should be set to: worker:3
 worker_ips: 
-    #- 128.232.115.65:[4,4] # worker_ip: [(# processes on gpu) for gpu in available_gpus] eg. 10.0.0.2:[4,4,4,4] This node has 4 gpus, each gpu has 4 processes.
-    - 128.232.115.66:[4,4]
+    - 128.232.115.65:[4] # worker_ip: [(# processes on gpu) for gpu in available_gpus] eg. 10.0.0.2:[4,4,4,4] This node has 4 gpus, each gpu has 4 processes.
+    - 128.232.115.66:[4]
     #- 128.232.115.0:[1]
 
-cuda_ids: [4,5]
+cuda_ids: [[0],[0]]
 
 exp_path: /nfs-share/yan/FedScale/new_FedScale/core
 
@@ -40,7 +40,7 @@ setup_commands:
 job_conf: 
     - job_name: femnist                   # Generate logs under this folder: log_path/job_name/time_stamp
     - log_path: /nfs-share/yan/FedScale/new_FedScale/core/evals # Path of log files
-    - total_worker: 35                      # Number of participants per round, we use K=100 in our paper, large K will be much slower
+    - total_worker: 3                      # Number of participants per round, we use K=100 in our paper, large K will be much slower
     - data_set: femnist                     # Dataset: openImg, google_speech, stackoverflow
     - data_dir: /datasets/FedScale/leaf_femnist    # Path of the dataset
     - data_map_file: /datasets/FedScale/leaf_femnist/client_data_mapping/train.csv              # Allocation of data to each client, turn to iid setting if not provided
